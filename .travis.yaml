@@ -1,0 +1,35 @@
+language: node_js
+node_js:
+  - 13
+
+services:
+  - docker
+
+# Pre-testing installs
+install:
+  - echo "nothing needs to be installed"
+
+# Scripts to be run such as tests
+before_script:
+  - echo "no tests"
+
+script:
+  - docker --version # print the version for logging
+  - docker-compose -f docker-compose-build.yaml build --parallel
+  - docker tag reverseproxy vitalprokofjev/reverseproxy:latest
+  - docker tag udagram-api-user vitalprokofjev/udagram-api-user:latest
+  - docker tag udagram-api-feed vitalprokofjev/udagram-api-feed:latest
+  - docker tag udagram-frontend vitalprokofjev/udagram-frontend:latest
+# Tasks to perform after the process is successful. Formatting the Docker username and password as below enables you to programmatically log in without having the password exposed in logs.
+after_success:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push vitalprokofjev/reverseproxy:latest
+  - docker push vitalprokofjev/udagram-api-user:latest
+  - docker push vitalprokofjev/udagram-frontend:latest
+  - docker push vitalprokofjev/reverseproxy:latest
+© 2022 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Docs
